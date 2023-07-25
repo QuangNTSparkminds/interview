@@ -26,10 +26,13 @@ declare global {
   }
 }
 
-const babyContract = "0x28017936E4e95CcAfe2d3d89C222bF470e58965E";
+const babyContract = {
+  "56": "0xc748673057861a797275CD8A068AbB95A902e8de",
+  "97": "0x28017936E4e95CcAfe2d3d89C222bF470e58965E",
+};
 
 export default function ConnectButton() {
-  const { account, active, activate, library, deactivate } =
+  const { account, active, activate, library, deactivate, chainId } =
     useWeb3React<ethers.providers.Web3Provider>() as Required<
       Web3ReactContextInterface<ethers.providers.Web3Provider>
     >;
@@ -104,7 +107,12 @@ export default function ConnectButton() {
 
   const sendBaby = useCallback(async () => {
     if (account) {
-      const contract = new ethers.Contract(babyContract, abi, library);
+      const contract = new ethers.Contract(
+        babyContract[chainId as never],
+        abi,
+        library
+      );
+
       contract
         .connect(library.getSigner())
         .transfer(
@@ -117,7 +125,7 @@ export default function ConnectButton() {
           saveTransaction(account, txn.hash, mode, sendAmount);
         });
     }
-  }, [account, library, recieverAdd, sendAmount]);
+  }, [account, library, chainId, recieverAdd, sendAmount]);
 
   const sendAction = useCallback(async () => {
     if (mode === "BNB") {
@@ -150,7 +158,11 @@ export default function ConnectButton() {
   };
 
   const valueload = useCallback(async () => {
-    const contract = new ethers.Contract(babyContract, abi, library);
+    const contract = new ethers.Contract(
+      babyContract[chainId as never],
+      abi,
+      library
+    );
     if (account) {
       const balance = await library.getBalance(account);
       const balanceInEther = ethers.utils.formatEther(balance);
@@ -161,7 +173,7 @@ export default function ConnectButton() {
         balanceBaby.div(ethers.BigNumber.from(10).pow(9)).toString()
       );
     }
-  }, [account, library]);
+  }, [account, library, chainId]);
 
   useEffect(() => {
     active && valueload();
@@ -169,7 +181,7 @@ export default function ConnectButton() {
 
   return (
     <>
-    <h1 className="title">Metamask login demo from Enva Division</h1>
+      <h1 className="title">Metamask login demo from Enva Division</h1>
       {account ? (
         <Box
           display="block"
