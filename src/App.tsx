@@ -4,17 +4,11 @@ import './App.css';
 import { ChakraProvider, extendTheme  } from "@chakra-ui/react";
 import Layout from "./components/Layout";
 import ConnectButton from './components/ConnectButton';
+import { ethers } from "ethers";
 
 function App() {
   function getLibrary(provider: any): Web3Provider {
-    const library = new Web3Provider(
-      provider,
-      typeof provider.chainId === 'number'
-        ? provider.chainId
-        : typeof provider.chainId === 'string'
-        ? parseInt(provider.chainId)
-        : 'any'
-    );
+    const library = new ethers.providers.Web3Provider(provider);
     library.pollingInterval = 15_000;
     return library;
   }
